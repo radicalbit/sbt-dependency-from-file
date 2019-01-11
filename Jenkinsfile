@@ -10,11 +10,7 @@ node {
     }
 
     stage('Running tests') {
-        sh '${sbt} clean coverage test coverageReport'
-    }
-
-    stage('Publish scoverage report') {
-        step([$class: 'ScoveragePublisher', reportDir: 'target/scala-2.11/scoverage-report', reportFile: 'scoverage.xml'])
+        sh '${sbt} clean test'
     }
 
     if(env.BRANCH_NAME == 'develop' || env.BRANCH_NAME.startsWith('branch-') || isTag){
