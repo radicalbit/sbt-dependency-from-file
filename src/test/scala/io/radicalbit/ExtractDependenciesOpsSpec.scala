@@ -41,7 +41,7 @@ class ExtractDependenciesOpsSpec extends WordSpec with Matchers {
         getClass.getClassLoader.getResource("json/dependencies.json").getFile()
 
       val extractedDependencies =
-        ExtractDependenciesFromJsonPlugin.extractDependenciesFromJson(
+        ExtractDependenciesFromJsonPlugin.extractDependenciesTask(
           new File(jsonFile))
       info(s"Show extracted dependencies: $extractedDependencies")
 
@@ -54,7 +54,7 @@ class ExtractDependenciesOpsSpec extends WordSpec with Matchers {
         getClass.getClassLoader.getResource("json/dependencies.json").getFile()
 
       val extractedDependencies =
-        ExtractDependenciesFromJsonPlugin.extractDependenciesFromJson(
+        ExtractDependenciesFromJsonPlugin.extractDependenciesTask(
           new File(jsonFile))
       info(s"Show extracted dependencies: $extractedDependencies")
 
@@ -68,7 +68,7 @@ class ExtractDependenciesOpsSpec extends WordSpec with Matchers {
         getClass.getClassLoader.getResource("json/dependencies.json").getFile()
 
       val extractedResolver =
-        ExtractDependenciesFromJsonPlugin.extractedResolvers(new File(jsonFile))
+        ExtractDependenciesFromJsonPlugin.extractedResolversTask(new File(jsonFile))
       info(s"Show extracted dependencies: $extractedResolver")
 
       extractedResolver.size shouldBe 1
