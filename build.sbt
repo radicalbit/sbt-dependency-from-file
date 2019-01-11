@@ -7,7 +7,6 @@ lazy val root = (project in file("."))
     organization := "io.radicalbit",
     version := "0.1-SNAPSHOT",
     libraryDependencies ++= Dependencies.pluginDependencies,
-    sbtPlugin := true,
-    publishMavenStyle := true
+    sbtPlugin := true
   )
   .settings(PublishSettings.settings: _*)
