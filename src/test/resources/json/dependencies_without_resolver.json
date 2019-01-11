@@ -1,0 +1,8 @@
+[
+  {
+    "groupId":"io.fake",
+    "artifactId":"one-two-three",
+    "version":"1.2.0-SNAPSHOT",
+    "scalaVersion": "2.11"
+  }
+]

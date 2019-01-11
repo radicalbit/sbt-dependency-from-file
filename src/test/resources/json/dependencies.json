@@ -1,22 +1,22 @@
 [
   {
-    "groupId":"io.radicalbit",
-    "artifactId":"rtsae-operators-core",
+    "groupId":"io.fake",
+    "artifactId":"one-two-three",
     "version":"1.2.0-SNAPSHOT",
     "scalaVersion": "2.11",
     "resolver":{
-      "name":"Radicalbit Snapshots",
-      "url":"https://tools.radicalbit.io/artifactory/libs-snapshot-local/"
+      "name":"Fake Snapshots",
+      "url":"https://fake.repo.io/artifactory/snapshot/"
     }
   },
   {
-    "groupId":"io.radicalbit",
-    "artifactId":"rtsae-operators-core-kafkastreams",
+    "groupId":"io.fake",
+    "artifactId":"one-two-three-four",
     "version":"1.2.0-SNAPSHOT",
     "scalaVersion": "2.11",
     "resolver":{
-      "name":"Radicalbit Snapshots",
-      "url":"https://tools.radicalbit.io/artifactory/libs-snapshot-local/"
+      "name":"Fake Snapshots",
+      "url":"https://fake.repo.io/artifactory/snapshot/"
     }
   }
 ]

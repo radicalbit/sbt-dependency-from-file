@@ -1,6 +1,6 @@
 package io.radicalbit
 
-import java.io.{File, FileNotFoundException}
+import java.io.File
 
 import play.api.libs.json.Json
 import sbt._
@@ -11,24 +11,20 @@ sealed trait ExtractDependenciesOps {
   import models._
 
   private def readJsonFile(file: File) = Try {
-    scala.io.Source.fromFile(file).getLines().mkString("")
+    scala.io.Source
+      .fromFile(file)
+      .getLines()
+      .mkString("")
   }
 
-  def extractDependenciesTask(dependenciesFile: File) = {
-    if (dependenciesFile.exists()) {
-      this
-        .readJsonFile(dependenciesFile)
-        .map(Json.parse(_).as[Seq[Dependency]])
-        .getOrElse(throw new RuntimeException(
-          s"Error during read file${dependenciesFile.getPath}"))
-    } else {
-      throw new FileNotFoundException(
-        s"Not found file for this path: ${dependenciesFile.name}")
-    }
+  def extractDependenciesTask(dependenciesFile: File): Seq[Dependency] =
+    this
+      .readJsonFile(dependenciesFile)
+      .map(Json.parse(_).as[Seq[Dependency]])
+      .getOrElse(throw new RuntimeException(
+        s"Error during read file ${dependenciesFile.getPath}"))
 
-  }
-
-  def extractedResolversTask(dependenciesFile: File) = {
+  def extractedResolversTask(dependenciesFile: File): Seq[MavenRepository] = {
     val dependencies = this.extractDependenciesTask(dependenciesFile)
 
     dependencies
