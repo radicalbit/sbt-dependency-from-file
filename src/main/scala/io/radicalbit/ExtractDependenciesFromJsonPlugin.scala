@@ -5,22 +5,10 @@ import java.io.File
 import play.api.libs.json.Json
 import sbt._
 
-object ExtractDependenciesFromJsonPlugin extends AutoPlugin {
+sealed trait ExtractDependenciesOps {
   import models._
 
-  object autoImport {
-    lazy val dependenciesJsonPath = SettingKey[File]("dependenciesJsonPath")
-    lazy val extractedDependencies = SettingKey[Seq[ModuleID]]("extractedDependencies")
-    lazy val extractedResolver = SettingKey[Seq[MavenRepository]]("extractedResolver")
-  }
-
-  import autoImport._
-
-  override def trigger = noTrigger
-
-  override def requires = sbt.plugins.JvmPlugin
-
-  private def extracDependenciesFromJson(dependenciesFile: File) = {
+  def extractDependenciesFromJson(dependenciesFile: File) = {
     val jsonAsString =
       scala.io.Source
         .fromFile(dependenciesFile)
@@ -32,19 +20,47 @@ object ExtractDependenciesFromJsonPlugin extends AutoPlugin {
       .as[Seq[Dependency]]
   }
 
-  private def extractedResolvers(dependenciesFile: File) = {
-    val dependencies = this.extracDependenciesFromJson(dependenciesFile)
+  def extractedResolvers(dependenciesFile: File) = {
+    val dependencies = this.extractDependenciesFromJson(dependenciesFile)
 
     dependencies
       .groupBy(_.resolver.name)
       .map {
-        case (name, url) => MavenRepository(name, url.head.resolver.url)
+        case (name, urls) =>
+          val toSet: Option[Dependency] = urls.toSet.headOption
+          toSet.fold(
+            throw new IllegalArgumentException(
+              s"No Resolver was found in json for this resolver name $name")) {
+            dependencySet =>
+              MavenRepository(name, dependencySet.resolver.url)
+          }
+
       }
       .toSeq
   }
+}
+
+object ExtractDependenciesFromJsonPlugin
+    extends AutoPlugin
+    with ExtractDependenciesOps {
+
+  object autoImport {
+    lazy val dependenciesJsonPath = settingKey[File]("Dependencies file path")
+    lazy val extractedDependencies =
+      settingKey[Seq[ModuleID]]("Extracted dependencies")
+    lazy val extractedResolver =
+      settingKey[Seq[sbt.MavenRepository]]("Extract MavenResolver")
+  }
+
+  import autoImport._
+
+  override def trigger = noTrigger
+
+  override def requires = sbt.plugins.JvmPlugin
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    extractedDependencies := extracDependenciesFromJson(dependenciesJsonPath.value).toModuleId,
+    extractedDependencies := extractDependenciesFromJson(
+      dependenciesJsonPath.value).toModuleId,
     extractedResolver := extractedResolvers(dependenciesJsonPath.value)
   )
 }

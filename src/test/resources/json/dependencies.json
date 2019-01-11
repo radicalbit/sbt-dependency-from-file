@@ -1,0 +1,22 @@
+[
+  {
+    "groupId":"io.radicalbit",
+    "artifactId":"rtsae-operators-core",
+    "version":"1.2.0-SNAPSHOT",
+    "scalaVersion": "2.11",
+    "resolver":{
+      "name":"Radicalbit Snapshots",
+      "url":"https://tools.radicalbit.io/artifactory/libs-snapshot-local/"
+    }
+  },
+  {
+    "groupId":"io.radicalbit",
+    "artifactId":"rtsae-operators-core-kafkastreams",
+    "version":"1.2.0-SNAPSHOT",
+    "scalaVersion": "2.11",
+    "resolver":{
+      "name":"Radicalbit Snapshots",
+      "url":"https://tools.radicalbit.io/artifactory/libs-snapshot-local/"
+    }
+  }
+]
