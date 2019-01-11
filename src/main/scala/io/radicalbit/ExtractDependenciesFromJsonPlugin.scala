@@ -5,23 +5,27 @@ import java.io.File
 import play.api.libs.json.Json
 import sbt._
 
+import scala.util.Try
+
 sealed trait ExtractDependenciesOps {
   import models._
 
-  def extractDependenciesFromJson(dependenciesFile: File) = {
-    val jsonAsString =
-      scala.io.Source
-        .fromFile(dependenciesFile)
-        .getLines()
-        .mkString("")
-
-    Json
-      .parse(jsonAsString)
-      .as[Seq[Dependency]]
+  private def readJsonFile(file: File) = Try {
+    scala.io.Source
+      .fromFile(file)
+      .getLines()
+      .mkString("")
   }
 
-  def extractedResolvers(dependenciesFile: File) = {
-    val dependencies = this.extractDependenciesFromJson(dependenciesFile)
+  def extractDependenciesTask(dependenciesFile: File): Seq[Dependency] =
+    this
+      .readJsonFile(dependenciesFile)
+      .map(Json.parse(_).as[Seq[Dependency]])
+      .getOrElse(throw new RuntimeException(
+        s"Error during file reading ${dependenciesFile.getPath}"))
+
+  def extractedResolversTask(dependenciesFile: File): Seq[MavenRepository] = {
+    val dependencies = this.extractDependenciesTask(dependenciesFile)
 
     dependencies
       .groupBy(_.resolver.name)
@@ -48,8 +52,8 @@ object ExtractDependenciesFromJsonPlugin
     lazy val dependenciesJsonPath = settingKey[File]("Dependencies file path")
     lazy val extractedDependencies =
       settingKey[Seq[ModuleID]]("Extracted dependencies")
-    lazy val extractedResolver =
-      settingKey[Seq[sbt.MavenRepository]]("Extract MavenResolver")
+    lazy val extractedResolvers =
+      settingKey[Seq[sbt.MavenRepository]]("Extracted MavenResolver")
   }
 
   import autoImport._
@@ -59,8 +63,7 @@ object ExtractDependenciesFromJsonPlugin
   override def requires = sbt.plugins.JvmPlugin
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-    extractedDependencies := extractDependenciesFromJson(
-      dependenciesJsonPath.value).toModuleId,
-    extractedResolver := extractedResolvers(dependenciesJsonPath.value)
+    extractedDependencies := extractDependenciesTask(dependenciesJsonPath.value).toModuleId,
+    extractedResolvers := extractedResolversTask(dependenciesJsonPath.value)
   )
 }
