@@ -74,8 +74,8 @@ class ExtractDependenciesOpsSpec extends WordSpec with Matchers {
         val jsonFile = getClass.getClassLoader.getResource(
           "json/dependencies_without_resolver.json")
 
-        the[RuntimeException] thrownBy ExtractDependenciesFromJsonPlugin
-          .extractedResolversTask(new File(jsonFile.toURI)) should have message "Error during read file /Users/francescofrontera/Workspace/Radical/parsing-json-dependency-plugin/target/scala-2.10/sbt-0.13/test-classes/json/dependencies_without_resolver.json"
+        an[RuntimeException] should be thrownBy ExtractDependenciesFromJsonPlugin
+          .extractedResolversTask(new File(jsonFile.toURI))
       }
     }
 
@@ -95,6 +95,5 @@ class ExtractDependenciesOpsSpec extends WordSpec with Matchers {
         )
       }
     }
-
   }
 }

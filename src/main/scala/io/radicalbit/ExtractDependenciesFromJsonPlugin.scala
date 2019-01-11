@@ -22,7 +22,7 @@ sealed trait ExtractDependenciesOps {
       .readJsonFile(dependenciesFile)
       .map(Json.parse(_).as[Seq[Dependency]])
       .getOrElse(throw new RuntimeException(
-        s"Error during read file ${dependenciesFile.getPath}"))
+        s"Error during file reading ${dependenciesFile.getPath}"))
 
   def extractedResolversTask(dependenciesFile: File): Seq[MavenRepository] = {
     val dependencies = this.extractDependenciesTask(dependenciesFile)
