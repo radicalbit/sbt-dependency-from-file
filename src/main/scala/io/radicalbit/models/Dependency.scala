@@ -13,10 +13,10 @@ sealed case class Dependency(groupId: String,
 
 object Dependency {
   implicit lazy val readDependency: Reads[Dependency] = (
-    (JsPath \ "groupId").read[String] and
-      (JsPath \ "artifactId").read[String] and
-      (JsPath \ "version").read[String] and
-      (JsPath \ "scalaVersion").readNullable[String] and
+    (JsPath \ "groupId").read[String] ~
+      (JsPath \ "artifactId").read[String] ~
+      (JsPath \ "version").read[String] ~
+      (JsPath \ "scalaVersion").readNullable[String] ~
       (JsPath \ "resolver").read[Resolver]
   )(Dependency.apply _)
 

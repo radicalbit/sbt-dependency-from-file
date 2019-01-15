@@ -22,14 +22,19 @@ object ExtractDependenciesOpsSpec {
       "1.2.0-SNAPSHOT",
       Some("2.11"),
       Resolver("Fake Snapshots", "https://fake.repo.io/artifactory/snapshot/")
-    )
+    ),
+    Dependency("io.fake",
+               "one-two-three-four",
+               "1.2.0-SNAPSHOT",
+               Some("2.11"),
+               Resolver("Fake Snapshots Two",
+                        "https://fake.repo.two.io/artifactory/snapshot/"))
   )
 
-  lazy val rightDependenciesAsModuleId: Seq[ModuleID] = Seq(
-    "io.fake" %% "one-two-three" % "1.2.0-SNAPSHOT",
-    "io.fake" %% "one-two-three-four" % "1.2.0-SNAPSHOT"
-  )
+  lazy val rightDependenciesAsModuleId: Seq[ModuleID] =
+    RightDependencies.toModuleId
 }
+
 class ExtractDependenciesOpsSpec extends WordSpec with Matchers {
   import ExtractDependenciesOpsSpec._
 
@@ -44,7 +49,7 @@ class ExtractDependenciesOpsSpec extends WordSpec with Matchers {
           ExtractDependenciesFromJsonPlugin.extractDependenciesTask(
             new File(jsonFile.toURI))
 
-        extractedDependencies.size shouldBe 2
+        extractedDependencies.size shouldBe 3
         extractedDependencies shouldBe RightDependencies
       }
 
@@ -56,7 +61,7 @@ class ExtractDependenciesOpsSpec extends WordSpec with Matchers {
           ExtractDependenciesFromJsonPlugin.extractDependenciesTask(
             new File(jsonFile.toURI))
 
-        extractedDependencies.size shouldBe 2
+        extractedDependencies.size shouldBe 3
         extractedDependencies.toModuleId.map(_.toString) shouldBe rightDependenciesAsModuleId
           .map(_.toString)
       }
@@ -88,10 +93,12 @@ class ExtractDependenciesOpsSpec extends WordSpec with Matchers {
           ExtractDependenciesFromJsonPlugin.extractedResolversTask(
             new File(jsonFile.toURI))
 
-        extractedResolver.size shouldBe 1
+        extractedResolver.size shouldBe 2
         extractedResolver shouldBe Seq(
           MavenRepository("Fake Snapshots",
-                          "https://fake.repo.io/artifactory/snapshot/")
+                          "https://fake.repo.io/artifactory/snapshot/"),
+          MavenRepository("Fake Snapshots Two",
+                          "https://fake.repo.two.io/artifactory/snapshot/")
         )
       }
     }

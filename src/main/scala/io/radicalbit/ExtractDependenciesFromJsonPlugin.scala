@@ -2,14 +2,14 @@ package io.radicalbit
 
 import java.io.File
 
-import play.api.libs.json.Json
+import io.radicalbit.errors.{InvalidFieldException, ReducingResolverException}
+import io.radicalbit.models.Dependency
+import play.api.libs.json.{JsPath, Json, JsonValidationError}
 import sbt._
 
 import scala.util.Try
 
 sealed trait ExtractDependenciesOps {
-  import models._
-
   private def readJsonFile(file: File) = Try {
     scala.io.Source
       .fromFile(file)
@@ -17,30 +17,31 @@ sealed trait ExtractDependenciesOps {
       .mkString("")
   }
 
+  private def parseAndValidateJson(jsonString: String) =
+    Json
+      .parse(jsonString)
+      .validate[Seq[Dependency]]
+      .fold(errors => InvalidFieldException(errors.mkString(", ")).throwEx,
+            identity)
+
   def extractDependenciesTask(dependenciesFile: File): Seq[Dependency] =
     this
       .readJsonFile(dependenciesFile)
-      .map(Json.parse(_).as[Seq[Dependency]])
-      .getOrElse(throw new RuntimeException(
-        s"Error during file reading ${dependenciesFile.getPath}"))
+      .map(parseAndValidateJson)
+      .get
 
   def extractedResolversTask(dependenciesFile: File): Seq[MavenRepository] = {
     val dependencies = this.extractDependenciesTask(dependenciesFile)
 
     dependencies
-      .groupBy(_.resolver.name)
+      .groupBy(_.resolver.url)
       .map {
-        case (name, urls) =>
-          val toSet: Option[Dependency] = urls.toSet.headOption
-          toSet.fold(
-            throw new IllegalArgumentException(
-              s"No Resolver was found in json for this resolver name $name")) {
-            dependencySet =>
-              MavenRepository(name, dependencySet.resolver.url)
-          }
-
-      }
-      .toSeq
+        case (url, dependencies) =>
+          dependencies.toSet.headOption
+            .fold(ReducingResolverException(s"No Resolver was found in json for this resolver url $url").throwEx) { dependencySet =>
+                MavenRepository(dependencySet.resolver.name, url)
+            }
+      }.toSeq
   }
 }
 
