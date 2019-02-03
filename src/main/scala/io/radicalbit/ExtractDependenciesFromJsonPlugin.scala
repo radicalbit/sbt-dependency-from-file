@@ -2,7 +2,7 @@ package io.radicalbit
 
 import java.io.File
 
-import io.radicalbit.errors.{InvalidFieldException, ReducingResolverException}
+import io.radicalbit.errors.{InvalidFieldException, ReducingCredentialsException, ReducingResolverException}
 import io.radicalbit.models.Dependency
 import play.api.libs.json.{JsPath, Json, JsonValidationError}
 import sbt._
@@ -43,6 +43,15 @@ sealed trait ExtractDependenciesOps {
             }
       }.toSeq
   }
+
+  def extractedCredentialsTask(dependenciesFile: File): Seq[Credentials] =
+    this.extractDependenciesTask(dependenciesFile)
+      .flatMap(_.resolver.credentials)
+      .distinct
+      .map { credential =>
+          Credentials(realm = credential.realm, host = credential.host, userName = credential.user, passwd = credential.password)
+      }
+
 }
 
 object ExtractDependenciesFromJsonPlugin
@@ -55,6 +64,8 @@ object ExtractDependenciesFromJsonPlugin
       settingKey[Seq[ModuleID]]("Extracted dependencies")
     lazy val extractedResolvers =
       settingKey[Seq[sbt.MavenRepository]]("Extracted MavenResolver")
+    lazy val extractedCredentials =
+      settingKey[Seq[sbt.Credentials]]("Extracted Credentials")
   }
 
   import autoImport._
@@ -65,6 +76,7 @@ object ExtractDependenciesFromJsonPlugin
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     extractedDependencies := extractDependenciesTask(dependenciesJsonPath.value).toModuleId,
-    extractedResolvers := extractedResolversTask(dependenciesJsonPath.value)
+    extractedResolvers := extractedResolversTask(dependenciesJsonPath.value),
+    extractedCredentials := extractedCredentialsTask(dependenciesJsonPath.value)
   )
 }

@@ -8,4 +8,8 @@ package object errors {
   case class ReducingResolverException(message: String)
       extends RuntimeException(message)
       with DependencyFromJsonException
+
+  case class ReducingCredentialsException(message: String)
+      extends RuntimeException(message)
+      with DependencyFromJsonException
 }

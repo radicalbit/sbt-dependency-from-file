@@ -4,7 +4,7 @@ import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
 
-sealed case class Resolver(name: String, url: String)
+sealed case class Resolver(name: String, url: String, credentials: Option[Credentials])
 
 object Resolver {
   private lazy val regexForUrl =
@@ -12,6 +12,7 @@ object Resolver {
 
   implicit lazy val resolverReader: Reads[Resolver] = (
     (JsPath \ "name").read(minLength[String](1)) ~
-      (JsPath \ "url").read(pattern(regexForUrl, "Malformed resolver URL"))
+      (JsPath \ "url").read(pattern(regexForUrl, "Malformed resolver URL")) ~
+      (JsPath \ "credentials").readNullable[Credentials]
   )(Resolver.apply _)
 }

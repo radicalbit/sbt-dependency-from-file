@@ -26,7 +26,13 @@
     "scalaVersion": "2.11",
     "resolver": {
       "name": "Fake Snapshots Two",
-      "url": "https://fake.repo.two.io/artifactory/snapshot/"
+      "url": "https://fake.repo.two.io/artifactory/snapshot/",
+      "credentials": {
+        "realm": "Fake Artifcatory Realm",
+        "host": "fake.repo.two.io",
+        "user": "repoUser",
+        "password": "repoPwd"
+      }
     }
   }
 ]

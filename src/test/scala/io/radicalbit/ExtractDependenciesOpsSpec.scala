@@ -2,7 +2,7 @@ package io.radicalbit
 
 import java.io.File
 
-import io.radicalbit.models.{Dependency, Resolver}
+import io.radicalbit.models.{Dependency, Resolver, Credentials => ConfigCredentials}
 import org.scalatest.{Matchers, WordSpec}
 import sbt.MavenRepository
 import sbt._
@@ -14,21 +14,24 @@ object ExtractDependenciesOpsSpec {
       "one-two-three",
       "1.2.0-SNAPSHOT",
       Some("2.11"),
-      Resolver("Fake Snapshots", "https://fake.repo.io/artifactory/snapshot/")
+      Resolver("Fake Snapshots", "https://fake.repo.io/artifactory/snapshot/", None)
     ),
     Dependency(
       "io.fake",
       "one-two-three-four",
       "1.2.0-SNAPSHOT",
       Some("2.11"),
-      Resolver("Fake Snapshots", "https://fake.repo.io/artifactory/snapshot/")
+      Resolver("Fake Snapshots", "https://fake.repo.io/artifactory/snapshot/", None)
     ),
     Dependency("io.fake",
                "one-two-three-four",
                "1.2.0-SNAPSHOT",
                Some("2.11"),
-               Resolver("Fake Snapshots Two",
-                        "https://fake.repo.two.io/artifactory/snapshot/"))
+               Resolver(
+                 "Fake Snapshots Two",
+                  "https://fake.repo.two.io/artifactory/snapshot/",
+                 Some(ConfigCredentials("Fake Artifcatory Realm", "fake.repo.two.io", "repoUser", "repoPwd"))
+               ))
   )
 
   lazy val rightDependenciesAsModuleId: Seq[ModuleID] =
