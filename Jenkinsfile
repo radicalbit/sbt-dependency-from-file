@@ -1,5 +1,5 @@
 node {
-    def sbtHome = "${tool 'Sbt-0.13.15'}"
+    def sbtHome = "${tool 'Sbt-1.1.6'}"
     env.sbt= "${sbtHome}/bin/sbt -no-colors -batch -mem 4096"
 
     def isTag

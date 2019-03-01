@@ -2,10 +2,10 @@ import sbt._
 
 lazy val root = (project in file("."))
   .settings(
-    scalaVersion := "2.10.4",
+    scalaVersion := "2.12.8",
     name := "sbt-dependency-from-file",
     organization := "io.radicalbit",
-    version := "0.1-SNAPSHOT",
+    version := "1.0-SNAPSHOT",
     libraryDependencies ++= Dependencies.pluginDependencies,
     sbtPlugin := true
   )
