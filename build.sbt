@@ -5,7 +5,7 @@ lazy val root = (project in file("."))
     scalaVersion := "2.12.8",
     name := "sbt-dependency-from-file",
     organization := "io.radicalbit",
-    version := "0.1-SNAPSHOT",
+    version := "1.0-SNAPSHOT",
     libraryDependencies ++= Dependencies.pluginDependencies,
     sbtPlugin := true
   )
