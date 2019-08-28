@@ -8,10 +8,14 @@ lazy val root = (project in file("."))
     scalaVersion := "2.12.8",
     name := "sbt-dependency-from-file",
     organization := "io.radicalbit",
+    description := "sbt-dependency-from-file is a fresh-made library for dynamic load sbt dependencies using json files.",
     organizationName := "Radicalbit",
     startYear := Some(2019),
     version := "1.0",
     libraryDependencies ++= Dependencies.pluginDependencies,
+    publishMavenStyle := false,
+    bintrayRepository := "sbt-plugins",
+    bintrayOrganization in bintray := None,
     developers := List(
       Developer(id = "francescofrontera",
                 name = "Francesco Frontera",
@@ -24,4 +28,3 @@ lazy val root = (project in file("."))
     ),
     sbtPlugin := true
   )
-  .settings(PublishSettings.settings: _*)
