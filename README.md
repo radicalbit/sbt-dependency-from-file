@@ -11,7 +11,6 @@ By using `sbt-dependency-from-file`, users will be able to dynamically change pr
 
 In order to use `sbt-dependency-from-file` in a sbt project, add sbt plugin in `project/plugins.sbt`: 
     
-    resolvers += Resolver.url("radicalbit-plugins", url("https://dl.bintray.com/radicalbit/sbt-plugins"))(Resolver.ivyStylePatterns)
     addSbtPlugin("io.radicalbit" % "sbt-dependency-from-file" % "1.0")
     
 ## Example
