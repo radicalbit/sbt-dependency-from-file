@@ -1,18 +1,22 @@
 [![Build Status](https://travis-ci.org/radicalbit/sbt-dependency-from-file.svg?branch=master)](https://travis-ci.org/radicalbit/sbt-dependency-from-file)
 
 # sbt-dependency-from-file
-`sbt-dependency-from-file` is a fresh-made library for dynamic load sbt dependencies using json file.
+`sbt-dependency-from-file` is a fresh-made library for dynamic load sbt dependencies using json files.
+
+## Advantages
+
+By using `sbt-dependency-from-file`, users will be able to dynamically change project dependencies by adding or overwriting a simple file; this comes really handy to automation software.
 
 ## Usage
 
-In order to use `sbt-dependency-from-file` in  sbt project, add sbt plugin in `project/plugins.sbt`: 
+In order to use `sbt-dependency-from-file` in a sbt project, add sbt plugin in `project/plugins.sbt`: 
     
     resolvers += Resolver.url("radicalbit-plugins", url("https://dl.bintray.com/radicalbit/sbt-plugins"))(Resolver.ivyStylePatterns)
     addSbtPlugin("io.radicalbit" % "sbt-dependency-from-file" % "1.0")
     
 ## Example
 
-Suppose that you want to load different sbt dependencies according to specific environment, you just need to define a json file that contains dependecies in the root folder of your project:
+Suppose that you want to load different sbt dependencies according to *specific environment*, you just need to define a json file that contains dependencies in the root folder of your project:
 
 ```json [
           {
