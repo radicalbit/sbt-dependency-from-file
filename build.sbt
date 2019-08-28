@@ -2,7 +2,7 @@ import sbt._
 
 licenses += ("Apache-2.0", new URL(
   "https://www.apache.org/licenses/LICENSE-2.0.txt"))
-
+Resolver.sonatypeRepo("releas")
 lazy val root = (project in file("."))
   .settings(
     scalaVersion := "2.12.8",
