@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/radicalbit/sbt-dependency-from-file.svg?branch=master)](https://travis-ci.org/radicalbit/sbt-dependency-from-file)
+
 # sbt-dependency-from-file
 `sbt-dependency-from-file` is a fresh-made library for dynamic load sbt dependencies using json file.
 
