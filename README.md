@@ -1,11 +1,12 @@
 # sbt-dependency-from-file
-`sbt-dependency-from-file` is a fresh-made library for dynamic load sbt dependecies using json file.
+`sbt-dependency-from-file` is a fresh-made library for dynamic load sbt dependencies using json file.
 
 ## Usage
 
-In order to use `sbt-dependency-from-file` in  sbt project, include plugin in `project/plugins.sbt` file: 
-
-    addSbtPlugin("io.radicalbit" % "sbt-dependency-from-file" % "0.1")
+In order to use `sbt-dependency-from-file` in  sbt project, add sbt plugin in `project/plugins.sbt`: 
+    
+    resolvers += Resolver.url("radicalbit-plugins", url("https://dl.bintray.com/radicalbit/sbt-plugins"))(Resolver.ivyStylePatterns)
+    addSbtPlugin("io.radicalbit" % "sbt-dependency-from-file" % "1.0")
     
 ## Example
 
