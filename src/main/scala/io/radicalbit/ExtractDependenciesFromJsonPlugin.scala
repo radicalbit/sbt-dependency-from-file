@@ -18,9 +18,9 @@ package io.radicalbit
 
 import java.io.File
 
-import io.radicalbit.errors.{InvalidFieldException, ReducingCredentialsException, ReducingResolverException}
+import io.radicalbit.errors.{InvalidFieldException, ReducingResolverException}
 import io.radicalbit.models.Dependency
-import play.api.libs.json.{JsPath, Json, JsonValidationError}
+import play.api.libs.json.Json
 import sbt._
 
 import scala.util.Try
