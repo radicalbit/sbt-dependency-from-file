@@ -32,3 +32,8 @@ dist
 
 # MacOS specific
 .DS_Store
+
+#Metals and Bloop
+.metals
+.bloop
+project/metals.sbt
