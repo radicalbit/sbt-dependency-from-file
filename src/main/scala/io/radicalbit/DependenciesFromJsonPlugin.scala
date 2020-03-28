@@ -28,8 +28,7 @@ trait MinimalSetting extends AutoPlugin {
   override def requires = sbt.plugins.JvmPlugin
 
   lazy val dependenciesJsonPath = settingKey[File]("Dependencies file path")
-  lazy val dependenciesFromJson =
-    settingKey[DependenciesStructures]("Extracted information")
+  lazy val dependenciesFromJson = settingKey[DependenciesStructures]("Extracted information")
 }
 
 object DependenciesFromJsonPlugin extends MinimalSetting {
