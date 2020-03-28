@@ -26,18 +26,14 @@ import sbt._
 trait MinimalSetting extends AutoPlugin {
   override def trigger: PluginTrigger = noTrigger
   override def requires = sbt.plugins.JvmPlugin
+
+  lazy val dependenciesJsonPath = settingKey[File]("Dependencies file path")
+  lazy val dependenciesFromJson =
+    settingKey[DependenciesStructures]("Extracted information")
 }
 
 object DependenciesFromJsonPlugin extends MinimalSetting {
   implicit val extractor: Extractor[IO] = Extractor.dependenciesExtractor
-
-  object autoImport {
-    lazy val dependenciesJsonPath = settingKey[File]("Dependencies file path")
-    lazy val dependenciesFromJson =
-      settingKey[DependenciesStructures]("Extracted information")
-  }
-
-  import autoImport._
 
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     dependenciesFromJson := {

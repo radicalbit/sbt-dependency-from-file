@@ -5,19 +5,19 @@ import java.io.File
 import cats.data.Kleisli
 import cats.effect._
 import cats.implicits._
-import io.radicalbit.errors.{InvalidFieldException, ReducingResolverException}
+import io.radicalbit.errors._
 import io.radicalbit.models._
 import play.api.libs.json.Json
-import sbt.{Credentials, MavenRepository}
+import sbt.{ModuleID, MavenRepository, Credentials => SbtCredentials}
 
-trait Extractor[F[_]] {
+sealed trait Extractor[F[_]] {
   def load(file: File): Resource[F, Seq[Dependency]]
 
   def extractedResolvers: Kleisli[F, Seq[Dependency], Seq[MavenRepository]]
 
-  def extractedCredentials: Kleisli[F, Seq[Dependency], Seq[Credentials]]
+  def extractedCredentials: Kleisli[F, Seq[Dependency], Seq[SbtCredentials]]
 
-  def extractedModuleId: Kleisli[F, Seq[Dependency], Seq[sbt.ModuleID]]
+  def extractedModuleId: Kleisli[F, Seq[Dependency], Seq[ModuleID]]
 }
 
 object Extractor {
@@ -57,23 +57,23 @@ object Extractor {
             .pure[F]
       )
 
-    def extractedCredentials: Kleisli[F, Seq[Dependency], Seq[Credentials]] =
+    def extractedCredentials: Kleisli[F, Seq[Dependency], Seq[SbtCredentials]] =
       Kleisli(
         dependencies =>
           dependencies
             .flatMap(_.resolver.credentials)
             .distinct
             .map { c =>
-              Credentials(realm = c.realm,
-                          host = c.host,
-                          userName = c.user,
-                          passwd = c.password)
+              SbtCredentials(realm = c.realm,
+                             host = c.host,
+                             userName = c.user,
+                             passwd = c.password)
             }
             .pure[F]
       )
 
-    def extractedModuleId: Kleisli[F, Seq[Dependency], Seq[sbt.ModuleID]] =
-      Kleisli(d => d.toModuleId.pure[F])
+    def extractedModuleId: Kleisli[F, Seq[Dependency], Seq[ModuleID]] =
+      Kleisli(_.toModuleId.pure[F])
   }
 
 }
