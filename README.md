@@ -11,7 +11,7 @@ By using `sbt-dependency-from-file`, users will be able to dynamically change pr
 
 In order to use `sbt-dependency-from-file` in a sbt project, add sbt plugin in `project/plugins.sbt`: 
     
-    addSbtPlugin("io.radicalbit" % "sbt-dependency-from-file" % "1.0")
+    addSbtPlugin("io.radicalbit" % "sbt-dependency-from-file" % "1.5")
     
 ## Example
 
@@ -34,7 +34,7 @@ And then, in your `build.sbt`:
     
 ```scala 
     dependenciesJsonPath := baseDirectory.value / "dev.json"
-    libraryDependencies ++= extractedDependencies.value
+    libraryDependencies ++= dependenciesFromJson.value.dependencies
 ```    
     
 ## Authors
