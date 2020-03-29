@@ -17,7 +17,8 @@ In order to use `sbt-dependency-from-file` in a sbt project, add sbt plugin in `
 
 Suppose that you want to load different sbt dependencies according to *specific environment*, you just need to define a json file that contains dependencies in the root folder of your project:
 
-```json [
+```json 
+[
           {
             "groupId":"org.typelevel",
             "artifactId":"cats-core",
@@ -28,7 +29,7 @@ Suppose that you want to load different sbt dependencies according to *specific 
               "url":".m2/repository",
             }
           }
-        ]
+]
 ```
 And then, in your `build.sbt`:
     
