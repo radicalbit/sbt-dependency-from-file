@@ -23,7 +23,7 @@ import io.radicalbit.models.{Dependency, Resolver, Credentials => ConfigCredenti
 import org.scalatest.{Matchers, WordSpec}
 import sbt.{MavenRepository, _}
 
-object ExtractDependenciesOpsSpec {
+object ExtractorSpec {
   lazy val RightDependencies = Seq(
     Dependency(
       "io.fake",
@@ -64,8 +64,8 @@ object ExtractDependenciesOpsSpec {
     RightDependencies.toModuleId
 }
 
-class ExtractDependenciesOpsSpec extends WordSpec with Matchers {
-  import ExtractDependenciesOpsSpec._
+class ExtractorSpec extends WordSpec with Matchers {
+  import ExtractorSpec._
   implicit val extractor: Extractor[IO] = Extractor.dependenciesExtractor[IO]
 
   "ExtractDependenciesFromJson" should {
