@@ -14,8 +14,15 @@ object Dependencies {
     lazy val core = namespace %% "play-json" % version
   }
 
+  object catsEffect {
+    lazy val version = "1.3.0"
+    lazy val namespace = "org.typelevel"
+    lazy val core = namespace %% "cats-effect" % version
+  }
+
   lazy val pluginDependencies = Seq(
     playjson.core,
+    catsEffect.core,
     scalatest.core % Test
   )
 }
