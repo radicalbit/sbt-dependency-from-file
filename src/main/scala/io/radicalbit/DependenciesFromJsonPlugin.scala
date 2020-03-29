@@ -23,28 +23,36 @@ import io.radicalbit.extractor.Extractor
 import io.radicalbit.models.DependenciesStructures
 import sbt._
 
-trait MinimalSetting extends AutoPlugin {
+sealed trait MinimalSetting extends AutoPlugin {
   override def trigger: PluginTrigger = noTrigger
   override def requires = sbt.plugins.JvmPlugin
+}
 
+sealed trait KeysSetting {
   lazy val dependenciesJsonPath = settingKey[File]("Dependencies file path")
-  lazy val dependenciesFromJson = settingKey[DependenciesStructures]("Extracted information")
+  lazy val dependenciesFromJson =
+    settingKey[DependenciesStructures]("Extracted information")
 }
 
 object DependenciesFromJsonPlugin extends MinimalSetting {
   implicit val extractor: Extractor[IO] = Extractor.dependenciesExtractor
 
+  object autoImports extends KeysSetting
+
+  import autoImports._
+
+  private[this] def extractDepResAndCred =
+    for {
+      d <- Extractor[IO].extractedModuleId
+      r <- Extractor[IO].extractedResolvers
+      c <- Extractor[IO].extractedCredentials
+    } yield DependenciesStructures(d, r, c)
+
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
     dependenciesFromJson := {
       Extractor[IO]
         .load(dependenciesJsonPath.value)
-        .use { dependencies =>
-          (for {
-            d <- extractor.extractedModuleId
-            r <- extractor.extractedResolvers
-            c <- extractor.extractedCredentials
-          } yield DependenciesStructures(d, r, c)).run(dependencies)
-        }
+        .use(extractDepResAndCred.run)
         .unsafeRunSync()
     }
   )
