@@ -19,29 +19,25 @@ package io.radicalbit.extractor
 import java.io.File
 
 import cats.effect.IO
-import io.radicalbit.models.{Dependency, Resolver, Credentials => ConfigCredentials}
-import org.scalatest.{Matchers, WordSpec}
-import sbt.{MavenRepository, _}
+import io.radicalbit.models.{ Dependency, Resolver, Credentials => ConfigCredentials }
+import org.scalatest.{ Matchers, WordSpec }
+import sbt.{ MavenRepository, _ }
 
-object ExtractorSpec {
+object DependencyLoaderSpec {
   lazy val RightDependencies = Seq(
     Dependency(
       "io.fake",
       "one-two-three",
       "1.2.0-SNAPSHOT",
       Some("2.11"),
-      Resolver("Fake Snapshots",
-               "https://fake.repo.io/artifactory/snapshot/",
-               None)
+      Resolver("Fake Snapshots", "https://fake.repo.io/artifactory/snapshot/", None)
     ),
     Dependency(
       "io.fake",
       "one-two-three-four",
       "1.2.0-SNAPSHOT",
       Some("2.11"),
-      Resolver("Fake Snapshots",
-               "https://fake.repo.io/artifactory/snapshot/",
-               None)
+      Resolver("Fake Snapshots", "https://fake.repo.io/artifactory/snapshot/", None)
     ),
     Dependency(
       "io.fake",
@@ -51,11 +47,7 @@ object ExtractorSpec {
       Resolver(
         "Fake Snapshots Two",
         "https://fake.repo.two.io/artifactory/snapshot/",
-        Some(
-          ConfigCredentials("Fake Artifcatory Realm",
-                            "fake.repo.two.io",
-                            "repoUser",
-                            "repoPwd"))
+        Some(ConfigCredentials("Fake Artifcatory Realm", "fake.repo.two.io", "repoUser", "repoPwd"))
       )
     )
   )
@@ -64,9 +56,8 @@ object ExtractorSpec {
     RightDependencies.toModuleId
 }
 
-class ExtractorSpec extends WordSpec with Matchers {
-  import ExtractorSpec._
-  implicit val extractor: Extractor[IO] = Extractor.dependenciesExtractor[IO]
+class DependencyLoaderSpec extends WordSpec with Matchers {
+  import DependencyLoaderSpec._
 
   "ExtractDependenciesFromJson" should {
 
@@ -75,7 +66,7 @@ class ExtractorSpec extends WordSpec with Matchers {
         val jsonFile =
           getClass.getClassLoader.getResource("json/dependencies.json")
 
-        val extractedDependencies = extractor
+        val extractedDependencies = DependencyLoader[IO]
           .load(new File(jsonFile.toURI))
           .use(IO.pure)
           .unsafeRunSync()
@@ -88,22 +79,21 @@ class ExtractorSpec extends WordSpec with Matchers {
         val jsonFile =
           getClass.getClassLoader.getResource("json/dependencies.json")
 
-        val extractedDependencies: Seq[String] = extractor
+        val extractedDependencies: Seq[String] = DependencyLoader[IO]
           .load(new File(jsonFile.toURI))
-          .use(extractor.extractedModuleId.run)
+          .use(ExtractorBehaviour[IO].extractedModuleId.run)
           .map(_.map(_.toString()))
           .unsafeRunSync()
 
         extractedDependencies.size shouldBe 3
-        extractedDependencies shouldBe rightDependenciesAsModuleId.map(
-          _.toString)
+        extractedDependencies shouldBe rightDependenciesAsModuleId.map(_.toString)
       }
 
       "Return empty list from empty dependencies file" in {
         val jsonFile =
           getClass.getClassLoader.getResource("json/empty_dependencies.json")
 
-        extractor
+        DependencyLoader[IO]
           .load(new File(jsonFile.toURI))
           .use(IO.pure)
           .unsafeRunSync() shouldBe List
@@ -111,12 +101,11 @@ class ExtractorSpec extends WordSpec with Matchers {
       }
 
       "Throw a runtime exception" in {
-        val jsonFile = getClass.getClassLoader.getResource(
-          "json/dependencies_without_resolver.json")
+        val jsonFile = getClass.getClassLoader.getResource("json/dependencies_without_resolver.json")
 
-        an[RuntimeException] should be thrownBy extractor
+        an[RuntimeException] should be thrownBy DependencyLoader[IO]
           .load(new File(jsonFile.toURI))
-          .use(extractor.extractedResolvers.run)
+          .use(ExtractorBehaviour[IO].extractedResolvers.run)
           .unsafeRunSync()
       }
     }
@@ -127,17 +116,15 @@ class ExtractorSpec extends WordSpec with Matchers {
           getClass.getClassLoader.getResource("json/dependencies.json")
 
         val extractedResolver =
-          extractor
+          DependencyLoader[IO]
             .load(new File(jsonFile.toURI))
-            .use(extractor.extractedResolvers.run)
+            .use(ExtractorBehaviour[IO].extractedResolvers.run)
             .unsafeRunSync()
 
         extractedResolver.size shouldBe 2
         extractedResolver shouldBe Seq(
-          MavenRepository("Fake Snapshots",
-                          "https://fake.repo.io/artifactory/snapshot/"),
-          MavenRepository("Fake Snapshots Two",
-                          "https://fake.repo.two.io/artifactory/snapshot/")
+          MavenRepository("Fake Snapshots", "https://fake.repo.io/artifactory/snapshot/"),
+          MavenRepository("Fake Snapshots Two", "https://fake.repo.two.io/artifactory/snapshot/")
         )
       }
     }

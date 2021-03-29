@@ -16,12 +16,14 @@
 
 package io.radicalbit
 
-import java.io.File
+import cats.data.Kleisli
 
-import cats.effect.IO
-import io.radicalbit.extractor.Extractor
-import io.radicalbit.models.DependenciesStructures
+import java.io.File
+import cats.effect._
+import io.radicalbit.extractor.{ DependencyLoader, ExtractorBehaviour }
+import io.radicalbit.models.{ DependenciesStructures, Dependency }
 import sbt._
+import sbt.plugins.JvmPlugin
 
 sealed trait KeysSetting {
   lazy val dependenciesJsonPath = settingKey[File]("Dependencies file path")
@@ -30,27 +32,27 @@ sealed trait KeysSetting {
 }
 
 object DependenciesFromJsonPlugin extends AutoPlugin {
-  implicit val extractor: Extractor[IO] = Extractor.dependenciesExtractor
-
   object autoImports extends KeysSetting
   import autoImports._
 
   override def trigger: PluginTrigger = noTrigger
 
-  override def requires = sbt.plugins.JvmPlugin
+  override def requires: JvmPlugin.type = sbt.plugins.JvmPlugin
 
   override def projectSettings: Seq[Def.Setting[_]] =
-    Seq(dependenciesFromJson := {
-      Extractor[IO]
-        .load(dependenciesJsonPath.value)
-        .use(extractDepResAndCred.run)
+    Seq(
+      dependenciesFromJson := loadAndRun[IO](dependenciesJsonPath.value)
         .unsafeRunSync()
-    })
+    )
 
-  private[this] def extractDepResAndCred =
-    for {
-      d <- Extractor[IO].extractedModuleId
-      r <- Extractor[IO].extractedResolvers
-      c <- Extractor[IO].extractedCredentials
-    } yield DependenciesStructures(d, r, c)
+  private[this] def loadAndRun[F[_]: Sync](file: File): F[DependenciesStructures] = {
+    val behaviour =
+      for {
+        d <- ExtractorBehaviour[F].extractedModuleId
+        r <- ExtractorBehaviour[F].extractedResolvers
+        c <- ExtractorBehaviour[F].extractedCredentials
+      } yield DependenciesStructures(d, r, c)
+
+    DependencyLoader[F].load(file).use(behaviour.run)
+  }
 }

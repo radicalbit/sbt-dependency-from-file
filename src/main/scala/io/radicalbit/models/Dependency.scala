@@ -5,11 +5,13 @@ import play.api.libs.json.Reads._
 import play.api.libs.functional.syntax._
 import sbt._
 
-sealed case class Dependency(groupId: String,
-                             artifactId: String,
-                             version: String,
-                             scalaVersion: Option[String],
-                             resolver: Resolver)
+sealed case class Dependency(
+    groupId: String,
+    artifactId: String,
+    version: String,
+    scalaVersion: Option[String],
+    resolver: Resolver
+)
 
 object Dependency {
   implicit lazy val readDependency: Reads[Dependency] = (

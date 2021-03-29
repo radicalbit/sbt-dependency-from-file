@@ -13,5 +13,5 @@ object Credentials {
       (JsPath \ "host").read(minLength[String](1)) ~
       (JsPath \ "user").read(minLength[String](1)) ~
       (JsPath \ "password").read(minLength[String](1))
-    )(Credentials.apply _)
+  )(Credentials.apply _)
 }
