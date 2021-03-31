@@ -26,7 +26,7 @@ Suppose that you want to load different sbt dependencies according to *specific 
             "scalaVersion": "2.12",
             "resolver":{
               "name":"Local Maven Repository",
-              "url":".m2/repository",
+              "url":".m2/repository"
             }
           }
 ]
