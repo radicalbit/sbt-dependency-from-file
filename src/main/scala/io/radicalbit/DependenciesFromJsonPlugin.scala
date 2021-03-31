@@ -24,27 +24,20 @@ import sbt.plugins.JvmPlugin
 
 import java.io.File
 
-sealed trait KeysSetting {
-  lazy val dependenciesJsonPath = settingKey[File]("Dependencies file path")
-  lazy val dependenciesFromJson =
-    settingKey[DependenciesStructures]("Extracted information")
-}
 
 object DependenciesFromJsonPlugin extends AutoPlugin {
-  object autoImports extends KeysSetting
-  import autoImports._
+  object autoImport extends PluginKeys
 
+  import autoImport._
   override def trigger: PluginTrigger = noTrigger
-
   override def requires: JvmPlugin.type = sbt.plugins.JvmPlugin
-
   override def projectSettings: Seq[Def.Setting[_]] =
     Seq(
       dependenciesFromJson := loadAndRun[IO](dependenciesJsonPath.value)
         .unsafeRunSync()
     )
 
-  private[this] def loadAndRun[F[_]: Effect](file: File): F[DependenciesStructures] = {
+  private def loadAndRun[F[_]: Effect](file: File): F[DependenciesStructures] = {
     val behaviour =
       for {
         d <- ExtractorBehaviour[F].modulesID
