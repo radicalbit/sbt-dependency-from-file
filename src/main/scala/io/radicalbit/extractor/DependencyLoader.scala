@@ -22,22 +22,22 @@ import io.radicalbit.errors._
 import io.radicalbit.models._
 import play.api.libs.json.Json
 
-import java.io.File
+import java.io.{ File, FileInputStream }
 
 sealed trait DependencyLoader[F[_]] {
   def load(file: File): Resource[F, Seq[Dependency]]
 }
 
 object DependencyLoader {
-  def apply[F[_]: Sync](implicit extractor: DependencyLoader[F]): DependencyLoader[F] = instanceMaker[F]
+  def apply[F[_]: Effect](implicit extractor: DependencyLoader[F]): DependencyLoader[F] = loader[F]
 
-  implicit def instanceMaker[F[_]](implicit S: Sync[F]): DependencyLoader[F] =
+  implicit def loader[F[_]](implicit E: Effect[F]): DependencyLoader[F] =
     new DependencyLoader[F] {
       def load(file: File): Resource[F, Seq[Dependency]] =
         Resource
-          .fromAutoCloseable(S.delay(scala.io.Source.fromFile(file)))
+          .fromAutoCloseable(E.delay(scala.io.Source.fromFile(file)))
           .evalMap { buffer =>
-            S.fromEither {
+            E.fromEither {
               Json
                 .parse(buffer.getLines().mkString(""))
                 .validate[Seq[Dependency]]

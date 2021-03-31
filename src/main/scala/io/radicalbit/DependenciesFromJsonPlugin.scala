@@ -16,14 +16,13 @@
 
 package io.radicalbit
 
-import cats.data.Kleisli
-
-import java.io.File
 import cats.effect._
 import io.radicalbit.extractor.{ DependencyLoader, ExtractorBehaviour }
-import io.radicalbit.models.{ DependenciesStructures, Dependency }
+import io.radicalbit.models.DependenciesStructures
 import sbt._
 import sbt.plugins.JvmPlugin
+
+import java.io.File
 
 sealed trait KeysSetting {
   lazy val dependenciesJsonPath = settingKey[File]("Dependencies file path")
@@ -45,12 +44,12 @@ object DependenciesFromJsonPlugin extends AutoPlugin {
         .unsafeRunSync()
     )
 
-  private[this] def loadAndRun[F[_]: Sync](file: File): F[DependenciesStructures] = {
+  private[this] def loadAndRun[F[_]: Effect](file: File): F[DependenciesStructures] = {
     val behaviour =
       for {
-        d <- ExtractorBehaviour[F].extractedModuleId
-        r <- ExtractorBehaviour[F].extractedResolvers
-        c <- ExtractorBehaviour[F].extractedCredentials
+        d <- ExtractorBehaviour[F].modulesID
+        r <- ExtractorBehaviour[F].resolvers
+        c <- ExtractorBehaviour[F].credentials
       } yield DependenciesStructures(d, r, c)
 
     DependencyLoader[F].load(file).use(behaviour.run)

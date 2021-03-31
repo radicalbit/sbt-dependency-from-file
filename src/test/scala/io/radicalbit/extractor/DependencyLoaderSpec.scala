@@ -81,7 +81,7 @@ class DependencyLoaderSpec extends WordSpec with Matchers {
 
         val extractedDependencies: Seq[String] = DependencyLoader[IO]
           .load(new File(jsonFile.toURI))
-          .use(ExtractorBehaviour[IO].extractedModuleId.run)
+          .use(ExtractorBehaviour[IO].modulesID.run)
           .map(_.map(_.toString()))
           .unsafeRunSync()
 
@@ -105,7 +105,7 @@ class DependencyLoaderSpec extends WordSpec with Matchers {
 
         an[RuntimeException] should be thrownBy DependencyLoader[IO]
           .load(new File(jsonFile.toURI))
-          .use(ExtractorBehaviour[IO].extractedResolvers.run)
+          .use(ExtractorBehaviour[IO].resolvers.run)
           .unsafeRunSync()
       }
     }
@@ -118,7 +118,7 @@ class DependencyLoaderSpec extends WordSpec with Matchers {
         val extractedResolver =
           DependencyLoader[IO]
             .load(new File(jsonFile.toURI))
-            .use(ExtractorBehaviour[IO].extractedResolvers.run)
+            .use(ExtractorBehaviour[IO].resolvers.run)
             .unsafeRunSync()
 
         extractedResolver.size shouldBe 2
