@@ -12,6 +12,15 @@ By using `sbt-dependency-from-file`, users will be able to dynamically change pr
 In order to use `sbt-dependency-from-file` in a sbt project, add sbt plugin in `project/plugins.sbt`: 
     
     addSbtPlugin("io.radicalbit" % "sbt-dependency-from-file" % "1.5-SNAPSHOT")
+
+And enable the plugin:
+```
+lazy val core = project
+.in(file("modules/core"))
+.settings(commonSettings: _*)
+.enablePlugins(DependenciesFromJsonPlugin)
+```
+
     
 ## Example
 
